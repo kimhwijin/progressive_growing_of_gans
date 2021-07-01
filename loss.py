@@ -25,8 +25,12 @@ def fp32(*values):
 def G_wgan_acgan(G, D, opt, training_set, minibatch_size,
     cond_weight = 1.0): # Weight of the conditioning term.
 
+    #input_shapes는 모든 레이어의 input shape를 담고있음, 맨처음 input, 모델에 들어가는 input shape를 찾음
+    #[batch_size, width, height, channel]
     latents = tf.random_normal([minibatch_size] + G.input_shapes[0][1:])
+    #데이터에 무작위로 레이블을 배치
     labels = training_set.get_random_labels_tf(minibatch_size)
+    #build func에 latents, lables를 입력한 리턴값.
     fake_images_out = G.get_output_for(latents, labels, is_training=True)
     fake_scores_out, fake_labels_out = fp32(D.get_output_for(fake_images_out, is_training=True))
     loss = -fake_scores_out
